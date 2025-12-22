@@ -2,6 +2,7 @@
 
 extern crate alloc;
 
+extern crate cu_bincode as bincode;
 use serde_derive::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, bincode::Encode, bincode::Decode)]

@@ -1,3 +1,4 @@
+extern crate cu_bincode as bincode;
 use bincode::config;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 

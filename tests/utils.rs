@@ -1,3 +1,4 @@
+extern crate cu_bincode as bincode;
 use core::fmt::Debug;
 
 fn the_same_with_config<V, C, CMP>(element: &V, config: C, cmp: CMP)

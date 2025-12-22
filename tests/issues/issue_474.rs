@@ -2,6 +2,7 @@
 
 extern crate std;
 
+extern crate cu_bincode as bincode;
 use chrono::{DateTime, Utc};
 use serde::de::DeserializeOwned;
 use std::collections::HashMap;

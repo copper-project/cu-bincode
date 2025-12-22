@@ -30,6 +30,7 @@ library.
 ## Example
 
 ```rust
+# extern crate cu_bincode as bincode;
 use bincode::{config, Decode, Encode};
 
 #[derive(Encode, Decode, PartialEq, Debug)]

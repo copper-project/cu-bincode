@@ -5,6 +5,7 @@ extern crate alloc;
 
 mod utils;
 
+extern crate cu_bincode as bincode;
 use alloc::borrow::Cow;
 use alloc::collections::*;
 #[cfg(not(feature = "serde"))]

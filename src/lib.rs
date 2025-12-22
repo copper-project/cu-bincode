@@ -39,6 +39,7 @@
 //! # Example
 //!
 //! ```rust
+//! # extern crate cu_bincode as bincode;
 //! let mut slice = [0u8; 100];
 //!
 //! // You can encode any type that implements `Encode`.
@@ -233,5 +234,5 @@ pub mod migration_guide {
 // Test the examples in readme.md
 #[cfg(all(feature = "alloc", feature = "derive", doctest))]
 mod readme {
-    #![doc = include_str!("../readme.md")]
+    #![doc = include_str!("../README.md")]
 }

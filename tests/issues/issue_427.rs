@@ -1,5 +1,7 @@
 #![cfg(feature = "derive")]
 
+extern crate cu_bincode as bincode;
+
 /// HID-IO Packet Buffer Struct
 ///
 /// # Remarks

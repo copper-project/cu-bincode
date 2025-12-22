@@ -2,6 +2,7 @@
 
 extern crate std;
 
+extern crate cu_bincode as bincode;
 use std::ffi::CString;
 
 #[test]

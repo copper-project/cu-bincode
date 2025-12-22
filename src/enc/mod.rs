@@ -22,6 +22,7 @@ pub use self::encoder::EncoderImpl;
 /// For this struct:
 ///
 /// ```
+/// # extern crate cu_bincode as bincode;
 /// struct Entity {
 ///     pub x: f32,
 ///     pub y: f32,
@@ -30,6 +31,7 @@ pub use self::encoder::EncoderImpl;
 /// It will look something like:
 ///
 /// ```
+/// # extern crate cu_bincode as bincode;
 /// # struct Entity {
 /// #     pub x: f32,
 /// #     pub y: f32,
@@ -45,6 +47,7 @@ pub use self::encoder::EncoderImpl;
 ///     }
 /// }
 /// ```
+/// # extern crate cu_bincode as bincode;
 ///
 /// From here you can add/remove fields, or add custom logic.
 pub trait Encode {

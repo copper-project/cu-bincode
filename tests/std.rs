@@ -3,6 +3,7 @@
 
 mod utils;
 
+extern crate cu_bincode as bincode;
 use bincode::error::DecodeError;
 use std::{
     ffi::CString,

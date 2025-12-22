@@ -1,5 +1,6 @@
 // https://github.com/bincode-org/bincode/issues/618
 
+extern crate cu_bincode as bincode;
 use bincode::{Decode, Encode};
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use serde::{Deserialize, Serialize};

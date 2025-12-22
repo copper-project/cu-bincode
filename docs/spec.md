@@ -68,6 +68,7 @@ Endianness can be configured with the following methods, allowing for big-endian
 All tuples have no additional bytes, and are encoded in their specified order, e.g.
 
 ```rust
+# extern crate cu_bincode as bincode;
 let tuple = (u32::min_value(), i32::max_value()); // 8 bytes
 let encoded = bincode::encode_to_vec(tuple, bincode::config::legacy()).unwrap();
 assert_eq!(encoded.as_slice(), &[
@@ -109,6 +110,7 @@ Enums are encoded with their variant first, followed by optionally the variant f
 Both named and unnamed fields are serialized with their values only, and therefore encode to the same value.
 
 ```rust
+# extern crate cu_bincode as bincode;
 #[derive(bincode::Encode)]
 pub enum SomeEnum {
     A,
@@ -143,6 +145,7 @@ assert_eq!(encoded.as_slice(), &[
 `Option<T>` is always serialized using a single byte for the discriminant, even in `Fixint` encoding (which normally uses a `u32` for discriminant).
 
 ```rust
+# extern crate cu_bincode as bincode;
 let data: Option<u32> = Some(123);
 let encoded = bincode::encode_to_vec(data, bincode::config::legacy()).unwrap();
 assert_eq!(encoded.as_slice(), &[
@@ -180,6 +183,7 @@ Collections are encoded with their length value first, followed by each entry of
 - Each item serialized sequentially
 
 ```rust
+# extern crate cu_bincode as bincode;
 let list = vec![0u8, 1u8, 2u8];
 let encoded = bincode::encode_to_vec(list, bincode::config::legacy()).unwrap();
 assert_eq!(encoded.as_slice(), &[
@@ -227,6 +231,7 @@ assert_eq!(encoded.as_slice(), &[
 - If an invalid UTF-8 sequence is encountered during decoding, an [`DecodeError::Utf8`](https://docs.rs/bincode/2/bincode/error/enum.DecodeError.html#variant.Utf8) error is raised
 
 ```rust
+# extern crate cu_bincode as bincode;
 let str = "Hello 🌍"; // Mixed ASCII and Unicode
 
 let encoded = bincode::encode_to_vec(str, bincode::config::legacy()).unwrap();
@@ -248,6 +253,7 @@ Array length is never encoded.
 Note that `&[T]` is encoded as a [Collection](#collections).
 
 ```rust
+# extern crate cu_bincode as bincode;
 let arr: [u8; 5] = [10, 20, 30, 40, 50];
 let encoded = bincode::encode_to_vec(arr, bincode::config::legacy()).unwrap();
 assert_eq!(encoded.as_slice(), &[
@@ -259,6 +265,7 @@ assert_eq!(encoded.as_slice(), &[
 This applies to any type `T` that implements `Encode`/`Decode`
 
 ```rust
+# extern crate cu_bincode as bincode;
 #[derive(bincode::Encode)]
 struct Foo {
     first: u8,
