@@ -1,10 +1,7 @@
 # cu-bincode
-<img align="right" src="./logo.svg" />
-
-[![CI](https://github.com/copper-project/cu-bincode/workflows/CI/badge.svg)](https://github.com/copper-project/cu-bincode/actions)
+[![CI](https://github.com/copper-project/cu-bincode/workflows/rust.yml/badge.svg)](https://github.com/copper-project/cu-bincode/actions)
 [![](https://img.shields.io/crates/v/cu-bincode.svg)](https://crates.io/crates/cu-bincode)
 [![](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-<!-- [![](https://img.shields.io/badge/bincode-rustc_1.41.1+-lightgray.svg)](https://blog.rust-lang.org/2020/02/27/Rust-1.41.1.html) -->
 [![](https://img.shields.io/badge/discord-join-5865F2?logo=discord&logoColor=white)](https://discord.com/invite/VkCG7Sb9Kw)
 
 This is a hard fork of bincode 2.0.1 from crates.io (see first verbatim commit). Do not contact the original authors as per their wishes.
