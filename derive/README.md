@@ -1,6 +1,8 @@
-# Bincode-derive
+# cu-bincode-derive
 
-The derive crate for bincode. Implements `bincode::Encode` and `bincode::Decode`.
+This is a hard fork of bincode 2.0.1 from crates.io (see first verbatim commit). Do not contact the original authors as per their wishes.
+
+The derive crate for cu-bincode. Implements `bincode::Encode` and `bincode::Decode`.
 
 This crate is roughly split into 2 parts:
 

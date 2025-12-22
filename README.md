@@ -1,11 +1,13 @@
-# Bincode
+# cu-bincode
 <img align="right" src="./logo.svg" />
 
-[![CI](https://github.com/bincode-org/bincode/workflows/CI/badge.svg)](https://github.com/bincode-org/bincode/actions)
-[![](https://img.shields.io/crates/v/bincode.svg)](https://crates.io/crates/bincode)
+[![CI](https://github.com/copper-project/cu-bincode/workflows/CI/badge.svg)](https://github.com/copper-project/cu-bincode/actions)
+[![](https://img.shields.io/crates/v/cu-bincode.svg)](https://crates.io/crates/cu-bincode)
 [![](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 <!-- [![](https://img.shields.io/badge/bincode-rustc_1.41.1+-lightgray.svg)](https://blog.rust-lang.org/2020/02/27/Rust-1.41.1.html) -->
-[![Matrix](https://img.shields.io/matrix/bincode:matrix.org?label=Matrix%20Chat)](https://matrix.to/#/#bincode:matrix.org)
+[![](https://img.shields.io/badge/discord-join-5865F2?logo=discord&logoColor=white)](https://discord.com/invite/VkCG7Sb9Kw)
+
+This is a hard fork of bincode 2.0.1 from crates.io (see first verbatim commit). Do not contact the original authors as per their wishes.
 
 A compact encoder / decoder pair that uses a binary zero-fluff encoding scheme.
 The size of the encoded object will be the same or smaller than the size that
@@ -18,7 +20,7 @@ perfectly with other stream-based APIs such as Rust files, network streams,
 and the [flate2-rs](https://github.com/rust-lang/flate2-rs) compression
 library.
 
-## [API Documentation](https://docs.rs/bincode/)
+## [API Documentation](https://docs.rs/cu-bincode/)
 
 ## Bincode in the Wild
 
@@ -63,7 +65,7 @@ fn main() {
 
 ## Specification
 
-Bincode's format is specified in [docs/spec.md](https://github.com/bincode-org/bincode/blob/trunk/docs/spec.md).
+Bincode's format is specified in [docs/spec.md](https://github.com/copper-project/cu-bincode/blob/main/docs/spec.md).
 
 ## FAQ
 
