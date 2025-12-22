@@ -1,4 +1,5 @@
 #![no_std]
+#![allow(dead_code)]
 
 extern crate cu_bincode as bincode;
 

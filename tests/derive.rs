@@ -1,4 +1,5 @@
 #![cfg(feature = "derive")]
+#![allow(dead_code)]
 
 extern crate cu_bincode as bincode;
 use bincode::error::DecodeError;

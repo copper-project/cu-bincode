@@ -115,10 +115,8 @@ where
         v.encode(self.enc)
     }
 
-    serde::serde_if_integer128! {
-        fn serialize_i128(self, v: i128) -> Result<Self::Ok, Self::Error> {
-            v.encode(self.enc)
-        }
+    fn serialize_i128(self, v: i128) -> Result<Self::Ok, Self::Error> {
+        v.encode(self.enc)
     }
 
     fn serialize_u8(self, v: u8) -> Result<Self::Ok, Self::Error> {
@@ -137,10 +135,8 @@ where
         v.encode(self.enc)
     }
 
-    serde::serde_if_integer128! {
-        fn serialize_u128(self, v: u128) -> Result<Self::Ok, Self::Error> {
-            v.encode(self.enc)
-        }
+    fn serialize_u128(self, v: u128) -> Result<Self::Ok, Self::Error> {
+        v.encode(self.enc)
     }
 
     fn serialize_f32(self, v: f32) -> Result<Self::Ok, Self::Error> {
