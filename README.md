@@ -1,5 +1,5 @@
 # cu-bincode
-[![CI](https://github.com/gbin/copper-project/cu-bincode/workflows/rust/badge.svg)](https://github.com/copper-project/cu-bincode/actions)
+[![CI](https://github.com/copper-project/cu-bincode/workflows/rust.yml/badge.svg)](https://github.com/copper-project/cu-bincode/actions)
 [![](https://img.shields.io/crates/v/cu-bincode.svg)](https://crates.io/crates/cu-bincode)
 [![](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![](https://img.shields.io/badge/discord-join-5865F2?logo=discord&logoColor=white)](https://discord.com/invite/VkCG7Sb9Kw)
