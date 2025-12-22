@@ -71,8 +71,8 @@
 //! [`net::TcpStream`]: std::net::TcpStream
 //!
 
-#![doc(html_root_url = "https://docs.rs/bincode/2.0.1")]
-#![crate_name = "bincode"]
+#![doc(html_root_url = "https://docs.rs/cu-bincode/2.0.1")]
+#![crate_name = "cu_bincode"]
 #![crate_type = "rlib"]
 
 #[cfg(feature = "alloc")]
