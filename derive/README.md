@@ -1,8 +1,8 @@
 # cu-bincode-derive
 
-This is a hard fork of bincode 2.0.1 from crates.io (see first verbatim commit). Do not contact the original authors as per their wishes.
+This is a **hard fork of bincode 2 (2.0.1) from crates.io** (see first verbatim commit). Do not contact the original authors as per their wishes.
 
-The derive crate for cu-bincode. Implements `bincode::Encode` and `bincode::Decode`.
+The derive crate for cu-bincode. Implements `cu_bincode::Encode` and `cu_bincode::Decode`.
 
 This crate is roughly split into 2 parts:
 
@@ -27,4 +27,4 @@ This is supported by the structs in `src/generate`. The most notable points of t
 
 For additional derive testing, see the test cases in `../tests`
 
-For testing purposes, all generated code is outputted to the current `target/generated/bincode` folder, under file name `<struct/enum name>_Encode.rs` and `<struct/enum name>_Decode.rs`. This can help with debugging.
+For testing purposes, all generated code is outputted to the current `target/generated/cu_bincode` folder, under file name `<struct/enum name>_Encode.rs` and `<struct/enum name>_Decode.rs`. This can help with debugging.
