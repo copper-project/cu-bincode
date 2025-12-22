@@ -30,10 +30,10 @@ edition = "2024"
 default = ["std", "derive"]
 std = ["alloc", "serde?/std"]
 alloc = ["serde?/alloc"]
-derive = ["dep:cu_bincode_derive"]
+derive = ["dep:cu-bincode-derive"]
 
 [dependencies]
-cu_bincode_derive = { path = "derive", version = "2.0.2", optional = true }
+cu-bincode-derive = { path = "derive", version = "2.0.2", optional = true }
 serde = { version = "1.0", default-features = false, optional = true }
 unty = "0.0"
 
