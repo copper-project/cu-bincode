@@ -4,7 +4,7 @@
 [![](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![](https://img.shields.io/badge/discord-join-5865F2?logo=discord&logoColor=white)](https://discord.com/invite/VkCG7Sb9Kw)
 
-This is a hard fork of bincode 2.0.1 from crates.io (see first verbatim commit). Do not contact the original authors as per their wishes.
+This is a **hard fork of bincode 2 (2.0.1) from crates.io** (see first verbatim commit). Do not contact the original authors as per their wishes.
 
 A compact encoder / decoder pair that uses a binary zero-fluff encoding scheme.
 The size of the encoded object will be the same or smaller than the size that
@@ -105,6 +105,6 @@ Bincode 2.0 has an MSRV of 1.85.0. Any changes to the MSRV are considered a brea
 
 Bincode will encode enum variants as a `u32`. If you're worried about storage size, we can recommend enabling `Configuration::with_variable_int_encoding()`. This option is enabled by default with the `standard` configuration. In this case enum variants will almost always be encoded as a `u8`.
 
-Currently we have not found a compelling case to respect `#[repr(...)]`. You're most likely trying to interop with a format that is similar-but-not-quite-bincode. We only support our own protocol ([spec](https://github.com/bincode-org/bincode/blob/trunk/docs/spec.md)).
+Currently we have not found a compelling case to respect `#[repr(...)]`. You're most likely trying to interop with a format that is similar-but-not-quite-bincode. We only support our own protocol ([spec](https://github.com/copper-project/cu-bincode/blob/main/docs/spec.md)).
 
-If you really want to use bincode to encode/decode a different protocol, consider implementing `Encode` and `Decode` yourself. `bincode-derive` will output the generated implementation in `target/generated/bincode/<name>_Encode.rs` and `target/generated/bincode/<name>_Decode.rs` which should get you started.
+If you really want to use bincode to encode/decode a different protocol, consider implementing `Encode` and `Decode` yourself. `cu_bincode_derive` will output the generated implementation in `target/generated/cu_bincode/<name>_Encode.rs` and `target/generated/cu_bincode/<name>_Decode.rs` which should get you started.
