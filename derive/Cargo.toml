@@ -11,7 +11,7 @@ rust-version = "1.92"
 
 repository = "https://github.com/copper-robotics/cu_bincode"
 documentation = "https://docs.rs/cu_bincode_derive"
-readme = "./readme.md"
+readme = "./README.md"
 categories = ["encoding", "network-programming"]
 keywords = ["binary", "encode", "decode", "serialize", "deserialize"]
 license = "MIT"
