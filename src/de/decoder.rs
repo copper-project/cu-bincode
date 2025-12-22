@@ -13,6 +13,7 @@ use crate::{config::Config, error::DecodeError, utils::Sealed};
 /// is used to read integers out of the reader.
 ///
 /// ```
+/// # extern crate cu_bincode as bincode;
 /// # let slice: &[u8] = &[0, 0, 0, 0];
 /// # let some_reader = bincode::de::read::SliceReader::new(slice);
 /// use bincode::de::{DecoderImpl, Decode};

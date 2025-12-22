@@ -5,6 +5,7 @@
 //! To use a config, first create a type of [Configuration]. This type will implement trait [Config] for use with bincode.
 //!
 //! ```
+//! # extern crate cu_bincode as bincode;
 //! let config = bincode::config::standard()
 //!     // pick one of:
 //!     .with_big_endian()
@@ -107,6 +108,7 @@ impl<E, I, L> Configuration<E, I, L> {
     /// The zigzag algorithm is defined as follows:
     ///
     /// ```rust
+/// # extern crate cu_bincode as bincode;
     /// # type Signed = i32;
     /// # type Unsigned = u32;
     /// fn zigzag(v: Signed) -> Unsigned {
@@ -125,6 +127,7 @@ impl<E, I, L> Configuration<E, I, L> {
     /// And works such that:
     ///
     /// ```rust
+/// # extern crate cu_bincode as bincode;
     /// # let zigzag = |n: i64| -> u64 {
     /// #     match n {
     /// #         0 => 0,

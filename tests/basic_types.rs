@@ -1,5 +1,6 @@
 mod utils;
 
+extern crate cu_bincode as bincode;
 use bincode::error::DecodeError;
 use core::cell::{Cell, RefCell};
 use core::cmp::Reverse;

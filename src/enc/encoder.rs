@@ -10,6 +10,7 @@ use crate::{config::Config, utils::Sealed};
 /// is used to write integers to the writer.
 ///
 /// ```
+/// # extern crate cu_bincode as bincode;
 /// # use bincode::enc::{write::SliceWriter, EncoderImpl, Encode};
 /// let slice: &mut [u8] = &mut [0, 0, 0, 0];
 /// let config = bincode::config::legacy().with_big_endian();

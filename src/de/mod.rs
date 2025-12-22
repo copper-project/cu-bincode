@@ -36,6 +36,7 @@ pub use self::decoder::DecoderImpl;
 /// For this struct:
 ///
 /// ```
+/// # extern crate cu_bincode as bincode;
 /// struct Entity {
 ///     pub x: f32,
 ///     pub y: f32,
@@ -45,6 +46,7 @@ pub use self::decoder::DecoderImpl;
 /// It will look something like:
 ///
 /// ```
+/// # extern crate cu_bincode as bincode;
 /// # struct Entity {
 /// #     pub x: f32,
 /// #     pub y: f32,
@@ -75,6 +77,7 @@ pub use self::decoder::DecoderImpl;
 ///
 /// To get specific integer types, you can use:
 /// ```
+/// # extern crate cu_bincode as bincode;
 /// # struct Foo;
 /// # impl<Context> bincode::Decode<Context> for Foo {
 /// #     fn decode<D: bincode::de::Decoder<Context = Context>>(
@@ -90,6 +93,7 @@ pub use self::decoder::DecoderImpl;
 ///
 /// You can use `Context` to require contexts for decoding a type:
 /// ```
+/// # extern crate cu_bincode as bincode;
 /// # /// # use bumpalo::Bump;
 /// use bincode::de::Decoder;
 /// use bincode::error::DecodeError;
@@ -160,7 +164,7 @@ pub trait Decoder: Sealed {
     fn context(&mut self) -> &mut Self::Context;
 
     /// Wraps decoder with a context
-    fn with_context<C>(&mut self, context: C) -> WithContext<Self, C> {
+    fn with_context<C>(&mut self, context: C) -> WithContext<'_, Self, C> {
         WithContext {
             decoder: self,
             context,
@@ -202,6 +206,7 @@ pub trait Decoder: Sealed {
     /// a nested container (e.g. `Vec<Vec<T>>`), it does not know how much memory is already claimed, and could easily
     /// allocate much more than the user intends.
     /// ```
+/// # extern crate cu_bincode as bincode;
     /// # use bincode::de::{Decode, Decoder};
     /// # use bincode::error::DecodeError;
     /// # struct Container<T>(Vec<T>);

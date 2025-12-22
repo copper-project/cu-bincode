@@ -1,4 +1,7 @@
 #![no_std]
+#![allow(dead_code)]
+
+extern crate cu_bincode as bincode;
 
 #[path = "issues/issue_431.rs"]
 mod issue_431;

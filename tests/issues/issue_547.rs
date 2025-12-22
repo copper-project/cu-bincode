@@ -1,5 +1,6 @@
 #![cfg(all(feature = "serde", feature = "std"))]
 
+extern crate cu_bincode as bincode;
 use glam::vec3;
 
 use serde::{Deserialize, Serialize};

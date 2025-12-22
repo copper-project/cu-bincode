@@ -2,6 +2,8 @@
 
 extern crate std;
 
+extern crate cu_bincode as bincode;
+
 type NodeId = u64;
 
 use std::collections::BTreeSet;

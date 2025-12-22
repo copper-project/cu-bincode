@@ -13,6 +13,7 @@
 //! For interop with bincode's `derive` feature, you can use the `#[bincode(with_serde)]` attribute on each field that implements serde's traits.
 //!
 //! ```
+//! # extern crate cu_bincode as bincode;
 //! # #[cfg(feature = "derive")]
 //! # mod foo {
 //! # use bincode::{Decode, Encode};

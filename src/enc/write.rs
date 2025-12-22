@@ -22,6 +22,7 @@ impl<T: Writer> Writer for &mut T {
 /// A helper struct that implements `Writer` for a `&[u8]` slice.
 ///
 /// ```
+/// # extern crate cu_bincode as bincode;
 /// use bincode::enc::write::{Writer, SliceWriter};
 ///
 /// let destination = &mut [0u8; 100];
