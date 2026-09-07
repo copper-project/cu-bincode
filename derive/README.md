@@ -28,3 +28,13 @@ This is supported by the structs in `src/generate`. The most notable points of t
 For additional derive testing, see the test cases in `../tests`
 
 For testing purposes, all generated code is outputted to the current `target/generated/cu_bincode` folder, under file name `<struct/enum name>_Encode.rs` and `<struct/enum name>_Decode.rs`. This can help with debugging.
+
+
+## Runtime-only fields (2.1)
+
+`#[bincode(skip)]` omits a field from `Encode` and restores `Default::default()`
+in `Decode` and `BorrowDecode`. Add `default = "path::to::function"` inside the
+same attribute to call a zero-argument default function instead. Named and tuple
+fields in structs and enum variants are supported. Skipped fields need no codec
+traits. The `default` option requires `skip`; `with_serde` and `skip` are mutually
+exclusive. See the root README for examples and compatibility implications.

@@ -72,7 +72,7 @@
 //! [`net::TcpStream`]: std::net::TcpStream
 //!
 
-#![doc(html_root_url = "https://docs.rs/cu-bincode/2.0.1")]
+#![doc(html_root_url = "https://docs.rs/cu-bincode/2.1.0")]
 #![crate_name = "cu_bincode"]
 #![crate_type = "rlib"]
 
@@ -82,11 +82,14 @@ extern crate alloc;
 extern crate std;
 
 mod atomic;
+mod uleb128;
+
+pub use uleb128::Uleb128;
 mod features;
 pub(crate) mod utils;
 pub(crate) mod varint;
 
-use de::{read::Reader, Decoder};
+use de::{Decoder, read::Reader};
 use enc::write::Writer;
 
 #[cfg(any(

@@ -61,6 +61,61 @@ fn main() {
 }
 ```
 
+## Selective encoding in 2.1
+
+`Uleb128<T>` opts individual integers into ULEB128 without changing the default
+format or configuration of other values. Signed integers use zigzag followed by
+ULEB128. It supports all Rust integer widths, needs no allocation, and works with
+`no_std`, including without the `alloc` feature.
+
+```rust
+use cu_bincode::{config, decode_from_slice, encode_into_slice, Uleb128};
+
+let mut bytes = [0; 32];
+let len = encode_into_slice((300u32, Uleb128(-150i128)), &mut bytes, config::standard()).unwrap();
+assert_eq!(&bytes[..len], &[251, 44, 1, 171, 2]);
+let (value, used) = decode_from_slice::<(u32, Uleb128<i128>), _>(&bytes[..len], config::standard()).unwrap();
+assert_eq!(value, (300, Uleb128(-150)));
+assert_eq!(used, len);
+```
+
+Use the same wrapper and integer type when decoding. The wrapper is independent
+of the surrounding integer encoding and endianness. It does not switch the
+encoding of IDs, lengths, or payloads alongside it. Decoding enforces integer
+widths and the configured allocation budget, just like ordinary integers.
+
+The native derives also support runtime-only fields:
+
+```rust
+# extern crate cu_bincode as bincode;
+use bincode::{Decode, Encode};
+
+fn restored_state() -> u8 { 5 }
+
+#[derive(Encode, Decode)]
+struct Record {
+    id: u64,
+    #[bincode(skip, default = "restored_state")]
+    runtime_state: u8,
+    #[bincode(skip)]
+    cache: u32,
+    payload: u32,
+}
+```
+
+Skipped fields consume no bytes. `Decode` and `BorrowDecode` initialize them with
+`Default::default()` or the named zero-argument function. This works on named and
+tuple fields in structs and enum variants. Generic parameters used only in
+skipped fields do not require codec traits; default-initialized field types need
+`Default`. Custom default functions' bounds must be supplied by the type or the
+existing derive bound overrides. `default` requires `skip`, and `skip` cannot be
+combined with `with_serde`. Use Serde's own `#[serde(skip)]` separately when also
+deriving Serde traits.
+
+Ordinary encodings are unchanged in 2.1. Adding a wrapper or skipping a previously
+encoded field intentionally changes that application's layout; update its readers
+and format version together.
+
 ## Specification
 
 Bincode's format is specified in [docs/spec.md](https://github.com/copper-project/cu-bincode/blob/main/docs/spec.md).
