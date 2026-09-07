@@ -1,4 +1,4 @@
-use crate::attribute::{ContainerAttributes, FieldAttributes};
+use crate::attribute::{ContainerAttributes, FieldAttributes, FieldBounds};
 use virtue::prelude::*;
 
 pub(crate) struct DeriveStruct {
@@ -8,6 +8,7 @@ pub(crate) struct DeriveStruct {
 
 impl DeriveStruct {
     pub fn generate_encode(self, generator: &mut Generator) -> Result<()> {
+        let field_bounds = FieldBounds::new(self.fields.iter())?;
         let crate_name = &self.attributes.crate_name;
         generator
             .impl_for(format!("{}::Encode", crate_name))
@@ -21,6 +22,9 @@ impl DeriveStruct {
                         .map_err(|e| e.with_span(lit.span()))?;
                 } else {
                     for g in generics.iter_generics() {
+                        if !field_bounds.encodes(&g.ident) {
+                            continue;
+                        }
                         where_constraints
                             .push_constraint(g, format!("{}::Encode", crate_name))
                             .unwrap();
@@ -43,6 +47,9 @@ impl DeriveStruct {
                             .attributes()
                             .get_attribute::<FieldAttributes>()?
                             .unwrap_or_default();
+                        if attributes.skip {
+                            continue;
+                        }
                         if attributes.with_serde {
                             fn_body.push_parsed(format!(
                                 "{0}::Encode::encode(&{0}::serde::Compat(&self.{1}), encoder)?;",
@@ -63,6 +70,7 @@ impl DeriveStruct {
     }
 
     pub fn generate_decode(self, generator: &mut Generator) -> Result<()> {
+        let field_bounds = FieldBounds::new(self.fields.iter())?;
         // Remember to keep this mostly in sync with generate_borrow_decode
         let crate_name = &self.attributes.crate_name;
         let decode_context = if let Some((decode_context, _)) = &self.attributes.decode_context {
@@ -83,7 +91,11 @@ impl DeriveStruct {
                     where_constraints.clear();
                     where_constraints.push_parsed_constraint(bounds).map_err(|e| e.with_span(lit.span()))?;
                 } else {
+                    for bound in &field_bounds.defaults {
+                        where_constraints.push_parsed_constraint(bound)?;
+                    }
                     for g in generics.iter_generics() {
+                        if !field_bounds.encodes(&g.ident) { continue; }
                         where_constraints.push_constraint(g, format!("{}::Decode<{}>", crate_name, decode_context)).unwrap();
                     }
                 }
@@ -108,7 +120,9 @@ impl DeriveStruct {
                         if let Some(fields) = self.fields.as_ref() {
                             for field in fields.names() {
                                 let attributes = field.attributes().get_attribute::<FieldAttributes>()?.unwrap_or_default();
-                                if attributes.with_serde {
+                                if attributes.skip {
+                                    struct_body.push_parsed(format!("{}: {},", field, attributes.default_expression()))?;
+                                } else if attributes.with_serde {
                                     struct_body
                                         .push_parsed(format!(
                                             "{1}: (<{0}::serde::Compat<_> as {0}::Decode::<{2}>>::decode(decoder)?).0,",
@@ -137,6 +151,7 @@ impl DeriveStruct {
     }
 
     pub fn generate_borrow_decode(self, generator: &mut Generator) -> Result<()> {
+        let field_bounds = FieldBounds::new(self.fields.iter())?;
         // Remember to keep this mostly in sync with generate_decode
         let crate_name = self.attributes.crate_name;
 
@@ -159,7 +174,11 @@ impl DeriveStruct {
                     where_constraints.clear();
                     where_constraints.push_parsed_constraint(bounds).map_err(|e| e.with_span(lit.span()))?;
                 } else {
+                    for bound in &field_bounds.defaults {
+                        where_constraints.push_parsed_constraint(bound)?;
+                    }
                     for g in generics.iter_generics() {
+                        if !field_bounds.encodes(&g.ident) { continue; }
                         where_constraints.push_constraint(g, format!("{}::de::BorrowDecode<'__de, {}>", crate_name, decode_context)).unwrap();
                     }
                     for lt in generics.iter_lifetimes() {
@@ -181,7 +200,9 @@ impl DeriveStruct {
                         if let Some(fields) = self.fields.as_ref() {
                             for field in fields.names() {
                                 let attributes = field.attributes().get_attribute::<FieldAttributes>()?.unwrap_or_default();
-                                if attributes.with_serde {
+                                if attributes.skip {
+                                    struct_body.push_parsed(format!("{}: {},", field, attributes.default_expression()))?;
+                                } else if attributes.with_serde {
                                     struct_body
                                         .push_parsed(format!(
                                             "{1}: (<{0}::serde::BorrowCompat<_> as {0}::BorrowDecode::<'_, {2}>>::borrow_decode(decoder)?).0,",

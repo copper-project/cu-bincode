@@ -1,4 +1,4 @@
-use crate::attribute::{ContainerAttributes, FieldAttributes};
+use crate::attribute::{ContainerAttributes, FieldAttributes, FieldBounds};
 use virtue::prelude::*;
 
 const TUPLE_FIELD_PREFIX: &str = "field_";
@@ -17,6 +17,11 @@ impl DeriveEnum {
     }
 
     pub fn generate_encode(self, generator: &mut Generator) -> Result<()> {
+        let field_bounds = FieldBounds::new(
+            self.variants
+                .iter()
+                .filter_map(|variant| variant.fields.as_ref()),
+        )?;
         let crate_name = self.attributes.crate_name.as_str();
         generator
             .impl_for(format!("{}::Encode", crate_name))
@@ -30,6 +35,9 @@ impl DeriveEnum {
                         .map_err(|e| e.with_span(lit.span()))?;
                 } else {
                     for g in generics.iter_generics() {
+                        if !field_bounds.encodes(&g.ident) {
+                            continue;
+                        }
                         where_constraints
                             .push_constraint(g, format!("{}::Encode", crate_name))
                             .unwrap();
@@ -67,9 +75,25 @@ impl DeriveEnum {
                                     if idx != 0 {
                                         field_body.punct(',');
                                     }
-                                    field_body.push(
-                                        field_name.to_token_tree_with_prefix(TUPLE_FIELD_PREFIX),
-                                    );
+                                    let attributes = field_name
+                                        .attributes()
+                                        .get_attribute::<FieldAttributes>()?
+                                        .unwrap_or_default();
+                                    if attributes.skip {
+                                        if matches!(fields, Fields::Struct(_)) {
+                                            field_body.push(
+                                                field_name
+                                                    .to_token_tree_with_prefix(TUPLE_FIELD_PREFIX),
+                                            );
+                                            field_body.punct(':');
+                                        }
+                                        field_body.ident_str("_");
+                                    } else {
+                                        field_body.push(
+                                            field_name
+                                                .to_token_tree_with_prefix(TUPLE_FIELD_PREFIX),
+                                        );
+                                    }
                                 }
                                 Ok(())
                             })?;
@@ -109,6 +133,9 @@ impl DeriveEnum {
                                         .attributes()
                                         .get_attribute::<FieldAttributes>()?
                                         .unwrap_or_default();
+                                    if attributes.skip {
+                                        continue;
+                                    }
                                     if attributes.with_serde {
                                         body.push_parsed(format!(
                                         "{0}::Encode::encode(&{0}::serde::Compat({1}), encoder)?;",
@@ -217,6 +244,11 @@ impl DeriveEnum {
     }
 
     pub fn generate_decode(self, generator: &mut Generator) -> Result<()> {
+        let field_bounds = FieldBounds::new(
+            self.variants
+                .iter()
+                .filter_map(|variant| variant.fields.as_ref()),
+        )?;
         let crate_name = self.attributes.crate_name.as_str();
 
         let decode_context = if let Some((decode_context, _)) = &self.attributes.decode_context {
@@ -241,7 +273,11 @@ impl DeriveEnum {
                     where_constraints.clear();
                     where_constraints.push_parsed_constraint(bounds).map_err(|e| e.with_span(lit.span()))?;
                 } else {
+                    for bound in &field_bounds.defaults {
+                        where_constraints.push_parsed_constraint(bound)?;
+                    }
                     for g in generics.iter_generics() {
+                        if !field_bounds.encodes(&g.ident) { continue; }
                         where_constraints.push_constraint(g, format!("{}::Decode<__Context>", crate_name))?;
                     }
                 }
@@ -294,7 +330,9 @@ impl DeriveEnum {
                                             }
                                             variant_body.punct(':');
                                             let attributes = field.attributes().get_attribute::<FieldAttributes>()?.unwrap_or_default();
-                                            if attributes.with_serde {
+                                            if attributes.skip {
+                                                variant_body.push_parsed(format!("{},", attributes.default_expression()))?;
+                                            } else if attributes.with_serde {
                                                 variant_body
                                                     .push_parsed(format!(
                                                         "<{0}::serde::Compat<_> as {0}::Decode::<__D::Context>>::decode(decoder)?.0,",
@@ -327,6 +365,11 @@ impl DeriveEnum {
     }
 
     pub fn generate_borrow_decode(self, generator: &mut Generator) -> Result<()> {
+        let field_bounds = FieldBounds::new(
+            self.variants
+                .iter()
+                .filter_map(|variant| variant.fields.as_ref()),
+        )?;
         let crate_name = &self.attributes.crate_name;
 
         let decode_context = if let Some((decode_context, _)) = &self.attributes.decode_context {
@@ -351,7 +394,11 @@ impl DeriveEnum {
                     where_constraints.clear();
                     where_constraints.push_parsed_constraint(bounds).map_err(|e| e.with_span(lit.span()))?;
                 } else {
+                    for bound in &field_bounds.defaults {
+                        where_constraints.push_parsed_constraint(bound)?;
+                    }
                     for g in generics.iter_generics() {
+                        if !field_bounds.encodes(&g.ident) { continue; }
                         where_constraints.push_constraint(g, format!("{}::de::BorrowDecode<'__de, {}>", crate_name, decode_context)).unwrap();
                     }
                     for lt in generics.iter_lifetimes() {
@@ -404,7 +451,9 @@ impl DeriveEnum {
                                             }
                                             variant_body.punct(':');
                                             let attributes = field.attributes().get_attribute::<FieldAttributes>()?.unwrap_or_default();
-                                            if attributes.with_serde {
+                                            if attributes.skip {
+                                                variant_body.push_parsed(format!("{},", attributes.default_expression()))?;
+                                            } else if attributes.with_serde {
                                                 variant_body
                                                     .push_parsed(format!("<{0}::serde::BorrowCompat<_> as {0}::BorrowDecode::<__D::Context>>::borrow_decode(decoder)?.0,", crate_name))?;
                                             } else {

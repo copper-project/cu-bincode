@@ -340,3 +340,30 @@ Enum variants are encoded with a discriminant followed by optional variant paylo
 - Payload is serialized immediately after the discriminant
 - No additional metadata about field names or types
 - Payload structure matches the variant's definition
+
+
+## Selective ULEB128 integers (2.1)
+
+The `Uleb128<T>` wrapper overrides integer encoding only for its contained value.
+Its bytes are independent of the configured endianness and fixed/variable integer
+mode. Ordinary integers and lengths retain their existing encoding.
+
+Unsigned values are emitted seven bits at a time, least significant group first.
+Bit 7 is set on every byte except the last. Zero is the single byte `00`.
+For example, 624485 is `e5 8e 26`. Signed integers first map to an unsigned value
+using zigzag: `0 -> 0`, `-1 -> 1`, `1 -> 2`, `-2 -> 3`, including each signed type's
+minimum and maximum. Thus -150 is `ab 02`.
+
+An N-bit integer uses at most ceil(N / 7) bytes. Decoders reject overflowing final
+bits, continuation beyond this limit, and truncated input. Non-minimal encodings
+are accepted within the integer's width limit; encoders always emit the minimal
+representation. Pointer-sized integers must fit the receiving platform's width.
+The wrapper uses the same decoded-size limit accounting as ordinary integers.
+
+## Skipped fields (2.1)
+
+Native derives omit fields annotated with `#[bincode(skip)]` entirely. All other
+fields and enum discriminants keep their normal order and encoding. Decoding
+supplies `Default::default()` or a function specified by
+`#[bincode(skip, default = "path::to::function")]`; nothing in the bytes identifies
+skipped fields or their default values.

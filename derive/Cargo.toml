@@ -1,6 +1,6 @@
 [package]
 name = "cu-bincode-derive"
-version = "2.0.2"
+version = "2.1.0"
 authors = [
     "Guillaume Binet <gbin@copper-robotics.com>",
     "Zoey Riordan <zoey@dos.cafe>",
@@ -9,7 +9,7 @@ authors = [
 edition = "2024"
 rust-version = "1.92"
 
-repository = "https://github.com/copper-robotics/cu_bincode"
+repository = "https://github.com/copper-project/cu-bincode"
 documentation = "https://docs.rs/cu_bincode_derive"
 readme = "./README.md"
 categories = ["encoding", "network-programming"]
