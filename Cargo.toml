@@ -3,7 +3,7 @@ members = ["derive"]
 
 [package]
 name = "cu-bincode"
-version = "2.1.0"
+version = "2.2.0"
 authors = [
     "Guillaume Binet <gbin@copper-robotics.com>",
     "Ty Overby <ty@pre-alpha.com>",

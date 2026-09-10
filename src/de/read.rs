@@ -18,6 +18,15 @@ pub trait Reader {
     /// Fill the given `bytes` argument with values. Exactly the length of the given slice must be filled, or else an error must be returned.
     fn read(&mut self, bytes: &mut [u8]) -> Result<(), DecodeError>;
 
+    /// Read up to `bytes.len()` bytes, returning the number read. A zero count for
+    /// a nonempty destination denotes end of input. The default performs an exact
+    /// read; streaming and bounded readers override this to support short reads.
+    #[inline]
+    fn read_some(&mut self, bytes: &mut [u8]) -> Result<usize, DecodeError> {
+        self.read(bytes)?;
+        Ok(bytes.len())
+    }
+
     /// If this reader wraps a buffer of any kind, this function lets callers access contents of
     /// the buffer without passing data through a buffer first.
     #[inline]
@@ -38,6 +47,11 @@ where
     #[inline]
     fn read(&mut self, bytes: &mut [u8]) -> Result<(), DecodeError> {
         (**self).read(bytes)
+    }
+
+    #[inline]
+    fn read_some(&mut self, bytes: &mut [u8]) -> Result<usize, DecodeError> {
+        (**self).read_some(bytes)
     }
 
     #[inline]
@@ -72,6 +86,13 @@ impl<'storage> SliceReader<'storage> {
 }
 
 impl<'storage> Reader for SliceReader<'storage> {
+    #[inline]
+    fn read_some(&mut self, bytes: &mut [u8]) -> Result<usize, DecodeError> {
+        let len = bytes.len().min(self.slice.len());
+        self.read(&mut bytes[..len])?;
+        Ok(len)
+    }
+
     #[inline(always)]
     fn read(&mut self, bytes: &mut [u8]) -> Result<(), DecodeError> {
         if bytes.len() > self.slice.len() {

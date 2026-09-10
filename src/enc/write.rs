@@ -10,12 +10,38 @@ use crate::error::EncodeError;
 pub trait Writer {
     /// Write `bytes` to the underlying writer. Exactly `bytes.len()` bytes must be written, or else an error should be returned.
     fn write(&mut self, bytes: &[u8]) -> Result<(), EncodeError>;
+
+    /// Return the append position for writers that support overwriting earlier bytes.
+    /// Positions are relative to the start of this writer's output.
+    /// Forward-only writers return an error without changing their output.
+    #[inline]
+    fn position(&self) -> Result<usize, EncodeError> {
+        Err(EncodeError::Other("Writer does not support backpatching"))
+    }
+
+    /// Replace bytes entirely within the already-written output, leaving the append
+    /// position unchanged. Reject invalid ranges without changing the output.
+    /// Wrappers must forward this operation without counting it as appended bytes.
+    #[inline]
+    fn overwrite(&mut self, _position: usize, _bytes: &[u8]) -> Result<(), EncodeError> {
+        Err(EncodeError::Other("Writer does not support backpatching"))
+    }
 }
 
 impl<T: Writer> Writer for &mut T {
     #[inline]
     fn write(&mut self, bytes: &[u8]) -> Result<(), EncodeError> {
         (**self).write(bytes)
+    }
+
+    #[inline]
+    fn position(&self) -> Result<usize, EncodeError> {
+        (**self).position()
+    }
+
+    #[inline]
+    fn overwrite(&mut self, position: usize, bytes: &[u8]) -> Result<(), EncodeError> {
+        (**self).overwrite(position, bytes)
     }
 }
 
@@ -34,35 +60,47 @@ impl<T: Writer> Writer for &mut T {
 /// ```
 pub struct SliceWriter<'storage> {
     slice: &'storage mut [u8],
-    original_length: usize,
+    position: usize,
 }
 
 impl<'storage> SliceWriter<'storage> {
     /// Create a new instance of `SliceWriter` with the given byte array.
     pub fn new(bytes: &'storage mut [u8]) -> SliceWriter<'storage> {
-        let original = bytes.len();
         SliceWriter {
             slice: bytes,
-            original_length: original,
+            position: 0,
         }
     }
 
     /// Return the amount of bytes written so far.
     pub fn bytes_written(&self) -> usize {
-        self.original_length - self.slice.len()
+        self.position
     }
 }
 
 impl Writer for SliceWriter<'_> {
     #[inline(always)]
     fn write(&mut self, bytes: &[u8]) -> Result<(), EncodeError> {
-        if bytes.len() > self.slice.len() {
-            return Err(EncodeError::UnexpectedEnd);
-        }
-        let (a, b) = core::mem::take(&mut self.slice).split_at_mut(bytes.len());
-        a.copy_from_slice(bytes);
-        self.slice = b;
+        let output = self.slice[self.position..]
+            .get_mut(..bytes.len())
+            .ok_or(EncodeError::UnexpectedEnd)?;
+        output.copy_from_slice(bytes);
+        self.position += bytes.len();
+        Ok(())
+    }
 
+    #[inline]
+    fn position(&self) -> Result<usize, EncodeError> {
+        Ok(self.position)
+    }
+
+    #[inline]
+    fn overwrite(&mut self, position: usize, bytes: &[u8]) -> Result<(), EncodeError> {
+        let output = self.slice[..self.position]
+            .get_mut(position..)
+            .and_then(|tail| tail.get_mut(..bytes.len()))
+            .ok_or(EncodeError::UnexpectedEnd)?;
+        output.copy_from_slice(bytes);
         Ok(())
     }
 }
@@ -76,8 +114,24 @@ pub struct SizeWriter {
 impl Writer for SizeWriter {
     #[inline(always)]
     fn write(&mut self, bytes: &[u8]) -> Result<(), EncodeError> {
-        self.bytes_written += bytes.len();
+        self.bytes_written = self
+            .bytes_written
+            .checked_add(bytes.len())
+            .ok_or(EncodeError::UnexpectedEnd)?;
 
+        Ok(())
+    }
+
+    #[inline]
+    fn position(&self) -> Result<usize, EncodeError> {
+        Ok(self.bytes_written)
+    }
+
+    #[inline]
+    fn overwrite(&mut self, position: usize, bytes: &[u8]) -> Result<(), EncodeError> {
+        if position > self.bytes_written || bytes.len() > self.bytes_written - position {
+            return Err(EncodeError::UnexpectedEnd);
+        }
         Ok(())
     }
 }

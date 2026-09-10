@@ -1,12 +1,12 @@
 use crate::{
-    de::{read::Reader, BorrowDecoder, Decode, Decoder},
+    BorrowDecode, Config,
+    de::{BorrowDecoder, Decode, Decoder, read::Reader},
     enc::{
-        self,
+        self, Encode, Encoder,
         write::{SizeWriter, Writer},
-        Encode, Encoder,
     },
     error::{DecodeError, EncodeError},
-    impl_borrow_decode, BorrowDecode, Config,
+    impl_borrow_decode,
 };
 use alloc::{
     borrow::{Cow, ToOwned},
@@ -43,6 +43,22 @@ impl enc::write::Writer for VecWriter {
     #[inline(always)]
     fn write(&mut self, bytes: &[u8]) -> Result<(), EncodeError> {
         self.inner.extend_from_slice(bytes);
+        Ok(())
+    }
+
+    #[inline]
+    fn position(&self) -> Result<usize, EncodeError> {
+        Ok(self.inner.len())
+    }
+
+    #[inline]
+    fn overwrite(&mut self, position: usize, bytes: &[u8]) -> Result<(), EncodeError> {
+        let output = self
+            .inner
+            .get_mut(position..)
+            .and_then(|tail| tail.get_mut(..bytes.len()))
+            .ok_or(EncodeError::UnexpectedEnd)?;
+        output.copy_from_slice(bytes);
         Ok(())
     }
 }

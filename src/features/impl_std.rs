@@ -1,7 +1,7 @@
 use crate::{
     config::Config,
-    de::{read::Reader, BorrowDecode, BorrowDecoder, Decode, Decoder, DecoderImpl},
-    enc::{write::Writer, Encode, Encoder, EncoderImpl},
+    de::{BorrowDecode, BorrowDecoder, Decode, Decoder, DecoderImpl, read::Reader},
+    enc::{Encode, Encoder, EncoderImpl, write::Writer},
     error::{DecodeError, EncodeError},
     impl_borrow_decode,
 };
@@ -65,6 +65,14 @@ impl<R> Reader for IoReader<R>
 where
     R: std::io::Read,
 {
+    #[inline]
+    fn read_some(&mut self, bytes: &mut [u8]) -> Result<usize, DecodeError> {
+        std::io::Read::read(&mut self.reader, bytes).map_err(|inner| DecodeError::Io {
+            inner,
+            additional: bytes.len(),
+        })
+    }
+
     #[inline(always)]
     fn read(&mut self, bytes: &mut [u8]) -> Result<(), DecodeError> {
         self.reader
@@ -80,6 +88,14 @@ impl<R> Reader for std::io::BufReader<R>
 where
     R: std::io::Read,
 {
+    #[inline]
+    fn read_some(&mut self, bytes: &mut [u8]) -> Result<usize, DecodeError> {
+        std::io::Read::read(self, bytes).map_err(|inner| DecodeError::Io {
+            inner,
+            additional: bytes.len(),
+        })
+    }
+
     fn read(&mut self, bytes: &mut [u8]) -> Result<(), DecodeError> {
         self.read_exact(bytes).map_err(|inner| DecodeError::Io {
             inner,
