@@ -7,6 +7,7 @@ struct EncodedField {
     selector: String,
     declaration_index: usize,
     ty: String,
+    with_serde: bool,
 }
 
 fn encoded_fields(fields: Option<&Fields>, codec: &str) -> Result<Vec<EncodedField>> {
@@ -56,6 +57,7 @@ fn encoded_fields(fields: Option<&Fields>, codec: &str) -> Result<Vec<EncodedFie
             selector,
             declaration_index: *index,
             ty,
+            with_serde: attributes.with_serde,
         });
     }
     Ok(result)
@@ -89,7 +91,18 @@ fn generate(
     generator
         .impl_for(format!("{codec}::ValueDecode"))
         .modify_generic_constraints(|generics, constraints| {
-            constraints.push_parsed_constraint("Self: 'static")?;
+            // Unlike push_parsed_constraint, push_constraint handles an existing
+            // trailing comma in the declaration's where clause.
+            let (placeholder, _, _) =
+                Parse::new("struct Placeholder<T>;".parse().unwrap())?.into_generator();
+            let mut self_generic = virtue::generate::Parent::generics(&placeholder)
+                .unwrap()
+                .iter_generics()
+                .next()
+                .unwrap()
+                .clone();
+            self_generic.ident = Ident::new("Self", Span::call_site());
+            constraints.push_constraint(&self_generic, "'static")?;
             for field in fields {
                 // Recursive concrete fields must not create a cyclic where-clause obligation.
                 if field
@@ -122,6 +135,14 @@ pub fn generate_struct(
 ) -> Result<()> {
     let codec = &attributes.crate_name;
     let fields = encoded_fields(declarations, codec)?;
+    // Serde's serialization can differ from the native field representation.
+    // Keep Encode available; these types need a handwritten recipe.
+    if fields
+        .iter()
+        .any(|field| field.with_serde)
+    {
+        return Ok(());
+    }
     let expression = format!(
         "{codec}::ValueDecodeSpec::Record {{ shape: {}, fields: {} }}",
         shape(declarations, fields.len(), codec),
@@ -152,5 +173,11 @@ pub fn generate_enum(
         "{codec}::ValueDecodeSpec::Enum {{ tag: {codec}::value_decode::Scalar::U32, variants: &[{}] }}",
         variants.join(",")
     );
+    if all_fields
+        .iter()
+        .any(|field| field.with_serde)
+    {
+        return Ok(());
+    }
     generate(generator, codec, &all_fields, expression)
 }

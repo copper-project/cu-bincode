@@ -72,7 +72,7 @@
 //! [`net::TcpStream`]: std::net::TcpStream
 //!
 
-#![doc(html_root_url = "https://docs.rs/cu-bincode/2.1.0")]
+#![doc(html_root_url = "https://docs.rs/cu-bincode/2.2.0-beta")]
 #![crate_name = "cu_bincode"]
 #![crate_type = "rlib"]
 

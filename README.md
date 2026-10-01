@@ -168,7 +168,9 @@ If you really want to use bincode to encode/decode a different protocol, conside
 ## Native encoding descriptions
 
 Enable `self-describing` alongside `derive` to generate a `ValueDecode`
-implementation with every `Encode` derive. The companion uses the encoder's
+implementation with native `Encode` derives. Types containing `with_serde`
+fields retain their codec implementations but need a handwritten `ValueDecode`
+implementation because Serde controls their wire representation. The companion uses the encoder's
 parsed declaration and field attributes, preserving field order, enum tags,
 skips, and typed child references. Recipes select scalar widths and container
 framing; the reader supplies the same bincode integer settings and endianness

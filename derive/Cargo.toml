@@ -1,6 +1,6 @@
 [package]
 name = "cu-bincode-derive"
-version = "2.1.0"
+version = "2.2.0-beta"
 authors = [
     "Guillaume Binet <gbin@copper-robotics.com>",
     "Zoey Riordan <zoey@dos.cafe>",
