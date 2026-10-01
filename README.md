@@ -164,3 +164,32 @@ Bincode will encode enum variants as a `u32`. If you're worried about storage si
 Currently we have not found a compelling case to respect `#[repr(...)]`. You're most likely trying to interop with a format that is similar-but-not-quite-bincode. We only support our own protocol ([spec](https://github.com/copper-project/cu-bincode/blob/main/docs/spec.md)).
 
 If you really want to use bincode to encode/decode a different protocol, consider implementing `Encode` and `Decode` yourself. `cu_bincode_derive` will output the generated implementation in `target/generated/cu_bincode/<name>_Encode.rs` and `target/generated/cu_bincode/<name>_Decode.rs` which should get you started.
+
+## Native encoding descriptions
+
+Enable `self-describing` alongside `derive` to generate a `ValueDecode`
+implementation with native `Encode` derives. Types containing `with_serde`
+fields retain their codec implementations but need a handwritten `ValueDecode`
+implementation because Serde controls their wire representation. The companion uses the encoder's
+parsed declaration and field attributes, preserving field order, enum tags,
+skips, and typed child references. Recipes select scalar widths and container
+framing; the reader supplies the same bincode integer settings and endianness
+used by the encoder.
+
+`ValueDecode` describes owned payload types. A handwritten encoder declares the
+representation it writes, for example:
+
+```rust
+use cu_bincode::{ValueDecode, ValueDecodeSpec};
+struct Orientation([f32; 4]);
+impl ValueDecode for Orientation {
+    const DECODE: &'static ValueDecodeSpec = <[f32; 4] as ValueDecode>::DECODE;
+}
+```
+
+Recipes are static and construct no value tree on the encoding path. Copper's
+experimental `cu29_value::decode::ValueDecodeDescription` combines them with
+reflection and quantity metadata to interpret native payload bytes offline.
+Missing nested recipes produce compile errors when companion generation is
+enabled. Serde adapter encodings and selective `Uleb128` encodings require
+additional supported recipes.

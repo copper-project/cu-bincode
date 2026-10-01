@@ -3,7 +3,7 @@ members = ["derive"]
 
 [package]
 name = "cu-bincode"
-version = "2.1.0"
+version = "2.2.0-beta"
 authors = [
     "Guillaume Binet <gbin@copper-robotics.com>",
     "Ty Overby <ty@pre-alpha.com>",
@@ -31,9 +31,10 @@ default = ["std", "derive"]
 std = ["alloc", "serde?/std"]
 alloc = ["serde?/alloc"]
 derive = ["dep:cu-bincode-derive"]
+self-describing = ["cu-bincode-derive?/self-describing"]
 
 [dependencies]
-cu-bincode-derive = { path = "derive", version = "2.1.0", optional = true }
+cu-bincode-derive = { path = "derive", version = "=2.2.0-beta", optional = true }
 serde = { version = "1.0", default-features = false, optional = true }
 unty = "0.0"
 
