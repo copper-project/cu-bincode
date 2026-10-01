@@ -22,3 +22,6 @@ proc-macro = true
 
 [dependencies]
 virtue = "0.0"
+
+[features]
+self-describing = []

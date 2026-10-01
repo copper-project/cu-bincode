@@ -100,6 +100,9 @@ use enc::write::Writer;
 ))]
 pub use features::*;
 
+pub mod value_decode;
+pub use value_decode::{ValueDecode, ValueDecodeSpec};
+
 pub mod config;
 #[macro_use]
 pub mod de;
