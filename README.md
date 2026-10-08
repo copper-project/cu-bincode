@@ -1,4 +1,16 @@
 # cu-bincode
+
+## Moved to the Copper monorepo
+
+Development has moved to [copper-project/copper-rs](https://github.com/copper-project/copper-rs):
+
+- **cu-bincode:** [`core/cu_bincode`](https://github.com/copper-project/copper-rs/tree/master/core/cu_bincode)
+- **cu-bincode-derive:** [`core/cu_bincode_derive`](https://github.com/copper-project/copper-rs/tree/master/core/cu_bincode_derive)
+
+Please submit issues and pull requests to the Copper monorepo. This repository
+retains the source of the last release published from here, **2.2.0-beta**;
+further development takes place in the monorepo.
+
 [![CI](https://github.com/copper-project/cu-bincode/actions/workflows/rust.yml/badge.svg)](https://github.com/copper-project/cu-bincode/actions)
 [![](https://img.shields.io/crates/v/cu-bincode.svg)](https://crates.io/crates/cu-bincode)
 [![](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
